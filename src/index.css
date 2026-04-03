@@ -1,0 +1,51 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+/* Override Tailwind v4 dark variant: respond to .dark class, not just media query */
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-serif: "Georgia", "Times New Roman", serif;
+}
+
+/* ── Reader color tokens ───────────────────────────────────────────────────────
+   Keyed directly to .dark class — no Tailwind dark: dependency.
+   Used for all critical reader text/background to guarantee contrast.        */
+:root {
+  --rf-reader-bg:      #ffffff;
+  --rf-text-primary:   #111827;
+  --rf-text-secondary: #6b7280;
+  --rf-focus-bg:       rgba(0, 0, 0, 0.04);
+}
+
+.dark {
+  --rf-reader-bg:      #0b1220;
+  --rf-text-primary:   rgba(255, 255, 255, 0.9);
+  --rf-text-secondary: rgba(255, 255, 255, 0.55);
+  --rf-focus-bg:       rgba(255, 255, 255, 0.07);
+}
+
+/* Safe area insets for iOS notch/home indicator */
+.pt-safe-top {
+  padding-top: max(12px, env(safe-area-inset-top));
+}
+
+/* Hide scrollbar on tag filters while keeping scroll */
+.scrollbar-none {
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* Smooth scroll globally */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Prevent text size adjustment on rotation */
+body {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}

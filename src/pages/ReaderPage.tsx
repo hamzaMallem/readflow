@@ -163,7 +163,7 @@ export default function ReaderPage() {
 
   const fontFamily = settings.fontFamily === 'serif'
     ? '"Georgia", "Times New Roman", serif'
-    : '"Inter", "system-ui", sans-serif'
+    : '-apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", "Inter", sans-serif'
 
   const minutesLeft = scrollProgress >= 99
     ? 0

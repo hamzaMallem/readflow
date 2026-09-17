@@ -22,9 +22,9 @@ export interface AppSettings {
 }
 
 export const DEFAULT_SETTINGS: AppSettings = {
-  fontSize: 19,
-  lineHeight: 1.9,
-  fontFamily: 'serif',
+  fontSize: 16,
+  lineHeight: 1.4,
+  fontFamily: 'sans',
   theme: 'system',
   focusModeEnabled: false,
   focusDimOpacity: 0.15,

@@ -1,6 +1,7 @@
 import { Suspense, lazy, useEffect } from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { useSettings } from './features/settings/useSettings'
+import { useAuth } from './features/auth/useAuth'
 import { Spinner } from './components/ui/Spinner'
 
 const LibraryPage = lazy(() => import('./pages/LibraryPage'))
@@ -29,9 +30,17 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
+function SyncEngine() {
+  // Keeps the Firestore sync listener attached for the whole app lifetime,
+  // not just while the Settings page (where sign-in/out lives) is mounted.
+  useAuth()
+  return null
+}
+
 export default function App() {
   return (
     <BrowserRouter>
+      <SyncEngine />
       <ThemeProvider>
         <Suspense fallback={<Spinner />}>
           <Routes>

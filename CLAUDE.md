@@ -58,6 +58,7 @@ AppSettings stored in `localStorage` (not IndexedDB). Simple key-value, no migra
 | PWA | vite-plugin-pwa + Workbox | latest | Auto SW + manifest generation |
 | Routing | React Router | 6 | Standard SPA routing |
 | IDs | uuid | 9 | RFC-compliant UUID v4 |
+| Sync | Firebase (Auth + Firestore) | 12 | Free-tier auth + realtime DB for cross-device sync |
 
 ---
 
@@ -111,14 +112,17 @@ src/
 │   ├── documents/        # useDocuments.ts, documentService.ts
 │   ├── reader/           # useReader.ts, readerService.ts
 │   ├── search/           # useSearch.ts, searchService.ts
-│   └── settings/         # useSettings.ts
+│   ├── settings/         # useSettings.ts
+│   ├── auth/             # useAuth.ts — Google Sign-In state
+│   └── sync/             # syncService.ts, resolveConflict.ts — Dexie ⇄ Firestore
 ├── storage/
 │   ├── interface.ts      # IStorageAdapter contract
 │   ├── localAdapter.ts   # Dexie/IndexedDB implementation
 │   └── db.ts             # Dexie schema + version migrations
 ├── lib/
 │   ├── search.ts         # MiniSearch instance + indexing
-│   └── paragraphs.ts     # Text splitting utility
+│   ├── paragraphs.ts     # Text splitting utility
+│   └── firebase.ts       # Firebase app/auth/firestore init
 ├── types/
 │   └── index.ts          # Global TypeScript types
 ├── App.tsx
@@ -164,6 +168,14 @@ src/
 - Re-index triggered on: document create, update, delete
 - Search is synchronous, in-memory, fully offline
 
+### Cross-Device Sync (opt-in)
+- Dexie stays the source of truth; `useDocuments`/`useLiveQuery` are untouched by sync
+- `features/sync/syncService.ts` mirrors `db.documents` to Firestore (`users/{uid}/documents/{id}`) via Dexie's `hook('creating'|'updating'|'deleting')` — no changes needed to `documentService`/`localAdapter` for new writes
+- Realtime pull via Firestore `onSnapshot`; conflicts resolved by `resolveConflict()` — highest `updatedAt` wins, ties favor remote
+- First sign-in on a device does a union pass: local-only and cloud-only docs are merged, nothing is dropped
+- Auth via `features/auth/useAuth.ts` (Google Sign-In); UI lives in Settings → Sync (`components/settings/SyncSection.tsx`)
+- Settings (`AppSettings`) intentionally do NOT sync — stay per-device in `localStorage` as designed above
+
 ### PWA / Offline Strategy
 - Workbox cache-first for all static assets (JS, CSS, fonts)
 - IndexedDB data is inherently offline-available
@@ -174,9 +186,9 @@ src/
 
 ## Security Constraints
 
-- No external API calls in MVP
-- No user authentication in MVP
-- All data stays on device
+- Only external calls: Firebase Auth (Google Sign-In) and Firestore, used solely for optional cross-device sync — everything else stays local-only
+- Firestore is scoped per-user via security rules (`request.auth.uid == userId`); nothing is publicly readable or writable
+- Dexie/IndexedDB remains the source of truth; the app is fully usable offline and signed out — Firestore is a sync target, not a dependency
 - No analytics, no tracking, no telemetry
 - Content Security Policy headers to be set at deployment
 
@@ -223,6 +235,7 @@ npm run preview      # Preview production build locally
 
 ## MVP Scope (Phase 1)
 
+- [x] Cross-device sync (Firebase Auth + Firestore, opt-in via Settings → Sync)
 - [ ] Paste and save text documents
 - [ ] Library view with document list
 - [ ] Reader view with clean typography

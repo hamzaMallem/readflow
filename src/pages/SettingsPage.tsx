@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useSettings } from '../features/settings/useSettings'
 import { IconButton } from '../components/ui/IconButton'
+import { SyncSection } from '../components/settings/SyncSection'
 
 export default function SettingsPage() {
   const navigate = useNavigate()
@@ -87,8 +88,11 @@ export default function SettingsPage() {
           </div>
         </section>
 
+        {/* Sync */}
+        <SyncSection />
+
         <p className="text-center text-xs text-gray-400 dark:text-gray-600 pt-4">
-          ReadFlow · All data stored locally on your device
+          ReadFlow · Stored on this device, synced when signed in
         </p>
       </main>
     </div>

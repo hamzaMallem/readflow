@@ -1,4 +1,4 @@
-const CACHE_NAME = 'readflow-v3';
+const CACHE_NAME = 'readflow-v4';
 
 const PRECACHE_ASSETS = [
   '/',

@@ -8,25 +8,25 @@ export default function SettingsPage() {
   const { settings, update } = useSettings()
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      <header className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-950 px-4 pt-safe-top pb-3 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2">
+    <div className="settings-page">
+      <header className="settings-header pt-safe-top">
         <IconButton label="Back" onClick={() => navigate('/')}>
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
         </IconButton>
-        <h1 className="text-base font-semibold text-gray-900 dark:text-white">Settings</h1>
+        <h1 className="settings-header-title">Settings</h1>
       </header>
 
-      <main className="mx-auto w-full max-w-2xl px-4 py-8 space-y-8">
+      <main className="settings-content">
         {/* Reading */}
         <section>
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Reading</h2>
-          <div className="bg-white dark:bg-gray-900 rounded-2xl divide-y divide-gray-100 dark:divide-gray-800 overflow-hidden">
+          <h2 className="settings-section-title">Reading</h2>
+          <div className="settings-group">
             {/* Font size */}
-            <SettingRow label="Font size" detail={`${settings.fontSize}px`}>
+            <SettingRow label="Font size">
               <Stepper
-                value={settings.fontSize}
+                value={settings.fontSize} label="Font size" valueLabel={`${settings.fontSize}px`}
                 min={14} max={24}
                 onDecrement={() => update({ fontSize: Math.max(14, settings.fontSize - 1) })}
                 onIncrement={() => update({ fontSize: Math.min(24, settings.fontSize + 1) })}
@@ -34,9 +34,9 @@ export default function SettingsPage() {
             </SettingRow>
 
             {/* Line spacing */}
-            <SettingRow label="Line spacing" detail={settings.lineHeight.toFixed(1)}>
+            <SettingRow label="Line spacing">
               <Stepper
-                value={settings.lineHeight}
+                value={settings.lineHeight} label="Line spacing" valueLabel={settings.lineHeight.toFixed(1)}
                 min={1.4} max={2.2}
                 onDecrement={() => update({ lineHeight: Math.max(1.4, parseFloat((settings.lineHeight - 0.1).toFixed(1))) })}
                 onIncrement={() => update({ lineHeight: Math.min(2.2, parseFloat((settings.lineHeight + 0.1).toFixed(1))) })}
@@ -59,8 +59,8 @@ export default function SettingsPage() {
 
         {/* Appearance */}
         <section>
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Appearance</h2>
-          <div className="bg-white dark:bg-gray-900 rounded-2xl divide-y divide-gray-100 dark:divide-gray-800 overflow-hidden">
+          <h2 className="settings-section-title">Appearance</h2>
+          <div className="settings-group">
             <SettingRow label="Theme">
               <SegmentControl
                 options={[
@@ -77,8 +77,8 @@ export default function SettingsPage() {
 
         {/* Focus mode */}
         <section>
-          <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Focus</h2>
-          <div className="bg-white dark:bg-gray-900 rounded-2xl divide-y divide-gray-100 dark:divide-gray-800 overflow-hidden">
+          <h2 className="settings-section-title">Focus</h2>
+          <div className="settings-group">
             <SettingRow label="Focus mode" detail="Highlights current paragraph">
               <Toggle
                 value={settings.focusModeEnabled}
@@ -91,7 +91,7 @@ export default function SettingsPage() {
         {/* Sync */}
         <SyncSection />
 
-        <p className="text-center text-xs text-gray-400 dark:text-gray-600 pt-4">
+        <p className="settings-footnote">
           ReadFlow · Stored on this device, synced when signed in
         </p>
       </main>
@@ -101,25 +101,25 @@ export default function SettingsPage() {
 
 function SettingRow({ label, detail, children }: { label: string; detail?: string; children?: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between gap-4 px-4 py-3.5 min-h-[56px]">
+    <div className="settings-row">
       <div>
-        <span className="text-sm text-gray-900 dark:text-white">{label}</span>
-        {detail && <p className="text-xs text-gray-400 dark:text-gray-500">{detail}</p>}
+        <span className="settings-label">{label}</span>
+        {detail && <p className="settings-detail">{detail}</p>}
       </div>
       {children}
     </div>
   )
 }
 
-function Stepper({ value, min, max, onDecrement, onIncrement }: {
-  value: number; min: number; max: number; onDecrement: () => void; onIncrement: () => void
+function Stepper({ value, min, max, label, valueLabel, onDecrement, onIncrement }: {
+  value: number; min: number; max: number; label: string; valueLabel: string
+  onDecrement: () => void; onIncrement: () => void
 }) {
   return (
-    <div className="flex items-center gap-2">
-      <button aria-label="Decrease value" onClick={onDecrement} disabled={value <= min}
-        className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-lg text-gray-900 dark:text-white disabled:opacity-30 active:opacity-60">−</button>
-      <button aria-label="Increase value" onClick={onIncrement} disabled={value >= max}
-        className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-lg text-gray-900 dark:text-white disabled:opacity-30 active:opacity-60">+</button>
+    <div className="settings-stepper" role="group" aria-label={label}>
+      <button aria-label={`Decrease ${label.toLowerCase()}`} onClick={onDecrement} disabled={value <= min}>−</button>
+      <output aria-live="polite">{valueLabel}</output>
+      <button aria-label={`Increase ${label.toLowerCase()}`} onClick={onIncrement} disabled={value >= max}>+</button>
     </div>
   )
 }
@@ -130,16 +130,12 @@ function SegmentControl({ options, value, onChange }: {
   onChange: (v: string) => void
 }) {
   return (
-    <div className="flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
+    <div className="settings-segments">
       {options.map((opt) => (
         <button
           key={opt.value} aria-pressed={value === opt.value}
           onClick={() => onChange(opt.value)}
-          className={`px-3 h-9 text-xs font-medium transition-colors ${
-            value === opt.value
-              ? 'bg-gray-900 text-white dark:bg-white dark:text-gray-900'
-              : 'text-gray-600 dark:text-gray-400'
-          }`}
+          className="settings-segment"
         >
           {opt.label}
         </button>
@@ -152,13 +148,9 @@ function Toggle({ value, onChange }: { value: boolean; onChange: (v: boolean) =>
   return (
     <button
       role="switch" aria-label="Focus mode" aria-checked={value} onClick={() => onChange(!value)}
-      className={`relative w-12 h-7 rounded-full transition-colors ${
-        value ? 'bg-gray-900 dark:bg-white' : 'bg-gray-200 dark:bg-gray-700'
-      }`}
+      className="settings-toggle"
     >
-      <span className={`absolute top-1 w-5 h-5 rounded-full bg-white dark:bg-gray-900 shadow transition-transform ${
-        value ? 'translate-x-6' : 'translate-x-1'
-      }`} />
+      <span className="settings-toggle-track" aria-hidden="true"><span /></span>
     </button>
   )
 }

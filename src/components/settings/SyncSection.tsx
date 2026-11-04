@@ -32,7 +32,7 @@ export function SyncSection() {
 
   return (
     <section aria-labelledby="sync-heading">
-      <h2 id="sync-heading" className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">Sync</h2>
+      <h2 id="sync-heading" className="settings-section-title">Sync</h2>
       <div className="sync-panel">
         <div className="sync-body">
           {isLoading ? <p role="status" className="sync-description">Checking your account…</p> : user ? <>

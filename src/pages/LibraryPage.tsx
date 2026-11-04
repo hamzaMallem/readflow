@@ -13,11 +13,11 @@ export default function LibraryPage() {
   const { query, setQuery, activeTag, setActiveTag, allTags, results } = useSearch(documents)
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="library-page">
       {/* Header */}
-      <header className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-950 px-4 pt-safe-top pb-3 border-b border-gray-100 dark:border-gray-800">
-        <div className="flex items-center justify-between mb-3">
-          <h1 className="flex items-center gap-2.5 text-xl font-bold text-gray-900 dark:text-white">
+      <header className="library-header pt-safe-top">
+        <div className="library-toolbar">
+          <h1 className="library-brand">
             <img src="/readflow-logo.svg" alt="" width="36" height="36" />
             ReadFlow
           </h1>
@@ -31,9 +31,9 @@ export default function LibraryPage() {
             <button
               onClick={() => navigate('/new')}
               aria-label="New document"
-              className="w-11 h-11 flex items-center justify-center rounded-xl bg-gray-900 dark:bg-white text-white dark:text-gray-900 text-xl font-light active:opacity-70 transition-opacity"
+              className="library-create"
             >
-              +
+              <span aria-hidden="true">+</span><span className="library-create-label">New document</span>
             </button>
           </div>
         </div>
@@ -46,13 +46,17 @@ export default function LibraryPage() {
       </header>
 
       {/* Content */}
-      <main className="px-4 py-4">
+      <main className="library-content">
+        <div className="library-list-heading">
+          <h2>Your library</h2>
+          <span>{results.length} {results.length === 1 ? 'document' : 'documents'}</span>
+        </div>
         {isLoading ? (
           <Spinner />
         ) : results.length === 0 ? (
           <EmptyState hasQuery={query.length > 0 || activeTag !== null} onNew={() => navigate('/new')} />
         ) : (
-          <div className="flex flex-col gap-3">
+          <div className="library-list">
             {results.map((doc) => (
               <DocumentCard key={doc.id} doc={doc} onDelete={deleteDocument} />
             ))}
@@ -65,17 +69,17 @@ export default function LibraryPage() {
 
 function EmptyState({ hasQuery, onNew }: { hasQuery: boolean; onNew: () => void }) {
   return (
-    <div className="flex flex-col items-center justify-center py-20 text-center px-6">
-      <p className="text-4xl mb-4">📖</p>
+    <div className="library-empty">
+      <img src="/readflow-logo.svg" alt="" width="48" height="48" />
       {hasQuery ? (
-        <p className="text-gray-500 dark:text-gray-400">No documents match your search.</p>
+        <p className="library-empty-description">No documents match your search.</p>
       ) : (
         <>
-          <p className="text-gray-800 dark:text-gray-200 font-medium mb-1">No documents yet</p>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">Paste a translated transcript to get started.</p>
+          <p className="library-empty-title">No documents yet</p>
+          <p className="library-empty-description">Paste a translated transcript to get started.</p>
           <button
             onClick={onNew}
-            className="px-5 h-11 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-xl font-medium text-sm active:opacity-70"
+            className="library-create"
           >
             Add your first document
           </button>

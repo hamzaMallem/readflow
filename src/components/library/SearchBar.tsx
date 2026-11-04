@@ -5,9 +5,9 @@ interface SearchBarProps {
 
 export function SearchBar({ value, onChange }: SearchBarProps) {
   return (
-    <div className="relative">
+    <div className="library-search">
       <svg
-        className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+        aria-hidden="true"
         fill="none" stroke="currentColor" viewBox="0 0 24 24"
       >
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -15,10 +15,11 @@ export function SearchBar({ value, onChange }: SearchBarProps) {
       </svg>
       <input
         type="search"
+        aria-label="Search documents"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Search documents..."
-        className="w-full pl-9 pr-4 h-11 bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-xl text-sm outline-none placeholder:text-gray-400 focus:ring-2 focus:ring-gray-900 dark:focus:ring-white"
+        className="library-search-input"
       />
     </div>
   )

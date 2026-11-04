@@ -19,6 +19,9 @@ export const localAdapter: IStorageAdapter = {
   },
 
   async delete(id) {
-    await db.documents.delete(id)
+    await db.transaction('rw', db.documents, db.deletions, async () => {
+      await db.deletions.put({ id, updatedAt: Date.now() })
+      await db.documents.delete(id)
+    })
   },
 }

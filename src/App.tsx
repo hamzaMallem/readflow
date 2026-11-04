@@ -30,17 +30,17 @@ function ThemeProvider({ children }: { children: React.ReactNode }) {
   return <>{children}</>
 }
 
-function SyncEngine() {
+function SyncEngine({ children }: { children: React.ReactNode }) {
   // Keeps the Firestore sync listener attached for the whole app lifetime,
   // not just while the Settings page (where sign-in/out lives) is mounted.
-  useAuth()
-  return null
+  const { isLoading } = useAuth()
+  return isLoading ? <Spinner /> : children
 }
 
 export default function App() {
   return (
     <BrowserRouter>
-      <SyncEngine />
+      <SyncEngine>
       <ThemeProvider>
         <Suspense fallback={<Spinner />}>
           <Routes>
@@ -51,6 +51,7 @@ export default function App() {
           </Routes>
         </Suspense>
       </ThemeProvider>
+      </SyncEngine>
     </BrowserRouter>
   )
 }

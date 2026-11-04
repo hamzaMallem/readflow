@@ -76,7 +76,7 @@ export default function ReaderPage() {
   const [resumePercent, setResumePercent] = useState<number | null>(null)
 
   const lastScrollY = useRef(0)
-  const { containerRef, restorePosition } = useReader(id ?? '', doc?.paragraphs.length ?? 0)
+  const { containerRef, restorePosition } = useReader(id ?? '')
   const docIsArabic = useMemo(() => {
     if (!doc) return false
     return detectArabicContent([doc.title, ...doc.paragraphs])
@@ -88,7 +88,7 @@ export default function ReaderPage() {
   // Load document
   useEffect(() => {
     if (!id) return
-    documentService.getById(id).then(setDoc)
+    documentService.getById(id).then((value) => setDoc(value ?? null))
   }, [id])
 
   // Restore position + schedule resume banner
@@ -105,7 +105,7 @@ export default function ReaderPage() {
     const bannerTimer = setTimeout(() => setResumePercent(savedPercent), 500)
 
     return () => { cancelAnimationFrame(raf); clearTimeout(bannerTimer) }
-  }, [doc?.id])
+  }, [doc?.id, doc?.paragraphs.length, doc?.readingPosition, restorePosition])
 
   // Focus mode: nearest paragraph to viewport center
   const updateFocus = useCallback(() => {

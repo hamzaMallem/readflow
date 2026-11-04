@@ -7,6 +7,7 @@ import {
   type User,
 } from 'firebase/auth'
 import { auth } from '../../lib/firebase'
+import { activeAccount } from '../../storage/db'
 import { startSync, stopSync } from '../sync/syncService'
 
 export function useAuth() {
@@ -15,6 +16,20 @@ export function useAuth() {
 
   useEffect(() => {
     return onAuthStateChanged(auth, (nextUser) => {
+      const uid = nextUser?.uid ?? null
+      if (uid !== activeAccount) {
+        stopSync()
+        if (uid) {
+          if (!localStorage.getItem('readflow-legacy-owner')) {
+            localStorage.setItem('readflow-legacy-owner', uid)
+          }
+          localStorage.setItem('readflow-active-account', uid)
+        } else {
+          localStorage.removeItem('readflow-active-account')
+        }
+        window.location.reload()
+        return
+      }
       setUser(nextUser)
       setIsLoading(false)
       if (nextUser) {
@@ -25,7 +40,11 @@ export function useAuth() {
     })
   }, [])
 
-  const signIn = () => signInWithPopup(auth, new GoogleAuthProvider())
+  const signIn = () => {
+    const provider = new GoogleAuthProvider()
+    provider.setCustomParameters({ prompt: 'select_account' })
+    return signInWithPopup(auth, provider)
+  }
   const signOut = () => firebaseSignOut(auth)
 
   return { user, isLoading, signIn, signOut }

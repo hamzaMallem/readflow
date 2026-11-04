@@ -2,7 +2,7 @@
 @plugin "@tailwindcss/typography";
 
 /* Override Tailwind v4 dark variant: respond to .dark class, not just media query */
-@variant dark (&:where(.dark, .dark *));
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --font-sans: "Inter", system-ui, sans-serif;
@@ -48,4 +48,61 @@ html {
 body {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+}
+
+
+/* Quiet, high-contrast account surface shared by light and dark themes. */
+:root {
+  --rf-panel: #fff;
+  --rf-panel-muted: #f5f6f7;
+  --rf-border: #e2e5e9;
+}
+.dark {
+  color-scheme: dark;
+  --rf-panel: #111a28;
+  --rf-panel-muted: #162130;
+  --rf-border: #2a3545;
+}
+.sync-panel { background: var(--rf-panel); border: 1px solid var(--rf-border); border-radius: 16px; color: var(--rf-text-primary); overflow: hidden; }
+.sync-body { padding: 24px; }
+.sync-title { font-size: 18px; line-height: 1.4; font-weight: 600; letter-spacing: -.025em; }
+.sync-description { color: var(--rf-text-secondary); font-size: 14px; line-height: 1.65; }
+.sync-google { display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 46px; padding: 0 20px; margin-top: 0; border: 1px solid #cbd0d8; border-radius: 8px; background: #fff; color: #202124; font-size: 14px; font-weight: 500; white-space: nowrap; transition: background .15s, border-color .15s; }
+.sync-google:hover:not(:disabled) { background: #f1f3f5; border-color: #9aa0a6; }
+.sync-google:disabled, .sync-signout:disabled { opacity: .6; cursor: wait; }
+.sync-caption { color: var(--rf-text-secondary); font-size: 12px; line-height: 1.6; margin-top: 10px; }
+.sync-footer { border-top: 1px solid var(--rf-border); padding: 14px 24px; font-size: 12px; line-height: 1.6; color: var(--rf-text-secondary); }
+.sync-account { display: flex; align-items: center; gap: 12px; }
+.sync-avatar { width: 40px; height: 40px; display: grid; place-items: center; flex-shrink: 0; border: 1px solid var(--rf-border); background: var(--rf-panel-muted); border-radius: 50%; font-size: 15px; font-weight: 600; }
+.sync-account .sync-title { font-size: 15px; }
+.sync-signout { min-height: 44px; padding: 0 8px; flex-shrink: 0; color: var(--rf-text-secondary); font-size: 13px; text-decoration: underline; text-underline-offset: 4px; }
+.sync-status { display: flex; align-items: flex-start; gap: 10px; padding: 16px; margin-top: 20px; background: var(--rf-panel-muted); border-radius: 8px; }
+.sync-status-title { font-size: 13px; font-weight: 500; line-height: 1.6; }
+.sync-status .sync-description { font-size: 12px; }
+.sync-dot { width: 7px; height: 7px; flex-shrink: 0; margin-top: 7px; border-radius: 50%; background: #94a3b8; }
+.sync-dot.is-synced { background: #4a9e76; }
+.sync-error { margin-top: 18px; padding: 14px; border-left: 3px solid #c76555; background: var(--rf-panel-muted); font-size: 13px; line-height: 1.65; overflow-wrap: anywhere; }
+.sync-retry { min-height: 44px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
+.sync-panel button:focus-visible { outline: 2px solid var(--rf-text-primary); outline-offset: 4px; }
+@media (max-width: 480px) {
+  .sync-body { padding: 20px; }
+  .sync-footer { padding: 14px 20px; }
+  .sync-google { width: 100%; }
+}
+
+.sync-intro { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 20px; }
+.sync-device-icon { color: var(--rf-text-secondary); flex-shrink: 0; }
+.sync-local-label { font-size: 11px; line-height: 1.5; color: var(--rf-text-secondary); border: 1px solid var(--rf-border); padding: 4px 9px; border-radius: 5px; }
+.sync-signin-layout { display: flex; justify-content: space-between; align-items: center; gap: 28px; }
+.sync-action { flex-shrink: 0; }
+.sync-action .sync-caption { text-align: center; }
+.sync-spinner { width: 18px; height: 18px; border: 2px solid #dadce0; border-top-color: #4285f4; border-radius: 50%; animation: sync-turn .8s linear infinite; }
+@keyframes sync-turn { to { transform: rotate(360deg); } }
+@media (max-width: 600px) {
+  .sync-signin-layout { flex-direction: column; align-items: stretch; gap: 22px; }
+  .sync-google { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sync-spinner { animation: none; }
+  .sync-google { transition: none; }
 }

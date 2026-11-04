@@ -1,4 +1,4 @@
-const CACHE_NAME = 'readflow-v1';
+const CACHE_NAME = 'readflow-v2';
 
 const PRECACHE_ASSETS = [
   '/',
@@ -15,7 +15,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+      Promise.all(keys.filter((k) => k.startsWith('readflow-') && k !== CACHE_NAME).map((k) => caches.delete(k)))
     )
   );
   self.clients.claim();
@@ -28,11 +28,18 @@ self.addEventListener('fetch', (event) => {
 
   // Only handle same-origin requests
   if (url.origin !== location.origin) return;
+  if (request.method !== 'GET' || url.pathname.startsWith('/__/auth/')) return;
 
   // Navigation: network-first, fall back to cached index.html
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request).catch(() => caches.match('/index.html'))
+      fetch(request).then(async (response) => {
+        if (response.ok) {
+          const cache = await caches.open(CACHE_NAME);
+          await cache.put('/index.html', response.clone());
+        }
+        return response;
+      }).catch(() => caches.match('/index.html'))
     );
     return;
   }

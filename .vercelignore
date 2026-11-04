@@ -1,0 +1,8 @@
+.remember
+.claude
+.git
+.env*
+node_modules
+dist
+.playwright-cli
+output

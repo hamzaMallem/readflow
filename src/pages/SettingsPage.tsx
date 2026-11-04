@@ -10,7 +10,7 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <header className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-950 px-4 pt-safe-top pb-3 border-b border-gray-100 dark:border-gray-800 flex items-center gap-2">
-        <IconButton label="Back" onClick={() => navigate(-1)}>
+        <IconButton label="Back" onClick={() => navigate('/')}>
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
@@ -18,7 +18,7 @@ export default function SettingsPage() {
         <h1 className="text-base font-semibold text-gray-900 dark:text-white">Settings</h1>
       </header>
 
-      <main className="px-4 py-5 space-y-6">
+      <main className="mx-auto w-full max-w-2xl px-4 py-8 space-y-8">
         {/* Reading */}
         <section>
           <h2 className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Reading</h2>
@@ -101,7 +101,7 @@ export default function SettingsPage() {
 
 function SettingRow({ label, detail, children }: { label: string; detail?: string; children?: React.ReactNode }) {
   return (
-    <div className="flex items-center justify-between px-4 py-3.5 min-h-[56px]">
+    <div className="flex items-center justify-between gap-4 px-4 py-3.5 min-h-[56px]">
       <div>
         <span className="text-sm text-gray-900 dark:text-white">{label}</span>
         {detail && <p className="text-xs text-gray-400 dark:text-gray-500">{detail}</p>}
@@ -116,9 +116,9 @@ function Stepper({ value, min, max, onDecrement, onIncrement }: {
 }) {
   return (
     <div className="flex items-center gap-2">
-      <button onClick={onDecrement} disabled={value <= min}
+      <button aria-label="Decrease value" onClick={onDecrement} disabled={value <= min}
         className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-lg text-gray-900 dark:text-white disabled:opacity-30 active:opacity-60">−</button>
-      <button onClick={onIncrement} disabled={value >= max}
+      <button aria-label="Increase value" onClick={onIncrement} disabled={value >= max}
         className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-lg text-gray-900 dark:text-white disabled:opacity-30 active:opacity-60">+</button>
     </div>
   )
@@ -133,7 +133,7 @@ function SegmentControl({ options, value, onChange }: {
     <div className="flex rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700">
       {options.map((opt) => (
         <button
-          key={opt.value}
+          key={opt.value} aria-pressed={value === opt.value}
           onClick={() => onChange(opt.value)}
           className={`px-3 h-9 text-xs font-medium transition-colors ${
             value === opt.value
@@ -151,7 +151,7 @@ function SegmentControl({ options, value, onChange }: {
 function Toggle({ value, onChange }: { value: boolean; onChange: (v: boolean) => void }) {
   return (
     <button
-      onClick={() => onChange(!value)}
+      role="switch" aria-label="Focus mode" aria-checked={value} onClick={() => onChange(!value)}
       className={`relative w-12 h-7 rounded-full transition-colors ${
         value ? 'bg-gray-900 dark:bg-white' : 'bg-gray-200 dark:bg-gray-700'
       }`}

@@ -20,6 +20,17 @@ function makeDoc(overrides: Partial<Document>): Document {
 }
 
 describe('resolveConflict', () => {
+  it('preserves newer reading progress independently of content changes', () => {
+    const local = makeDoc({ updatedAt: 100, lastReadAt: 300, readingPosition: { paragraphIndex: 8 } })
+    const remote = makeDoc({ updatedAt: 200, title: 'Edited elsewhere', lastReadAt: 150 })
+    expect(resolveConflict(local, remote)).toMatchObject({ title: 'Edited elsewhere', lastReadAt: 300, readingPosition: { paragraphIndex: 8 } })
+  })
+
+  it('accepts a deliberate move backwards on another device', () => {
+    const local = makeDoc({ lastReadAt: 100, readingPosition: { paragraphIndex: 8 } })
+    const remote = makeDoc({ lastReadAt: 200, readingPosition: { paragraphIndex: 2 } })
+    expect(resolveConflict(local, remote).readingPosition).toEqual({ paragraphIndex: 2 })
+  })
   it('picks the remote doc when it was updated more recently', () => {
     const local = makeDoc({ updatedAt: 100 })
     const remote = makeDoc({ updatedAt: 200 })

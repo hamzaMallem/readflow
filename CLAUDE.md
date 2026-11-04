@@ -170,8 +170,11 @@ src/
 
 ### Cross-Device Sync (opt-in)
 - Dexie stays the source of truth; `useDocuments`/`useLiveQuery` are untouched by sync
-- `features/sync/syncService.ts` mirrors `db.documents` to Firestore (`users/{uid}/documents/{id}`) via Dexie's `hook('creating'|'updating'|'deleting')` — no changes needed to `documentService`/`localAdapter` for new writes
-- Realtime pull via Firestore `onSnapshot`; conflicts resolved by `resolveConflict()` — highest `updatedAt` wins, ties favor remote
+- `features/sync/syncService.ts` observes committed local records via Dexie `liveQuery` and reconciles with Firestore (`users/{uid}/documents/{id}`) using transactions after a server snapshot arrives
+- Realtime pull via Firestore `onSnapshot`; conflicts merge content by `updatedAt` and reading position by `lastReadAt`, with ties favoring remote
+- Deletions persist in the local `deletions` table and as cloud tombstones; deletion wins over stale documents from offline devices
+- Local databases are scoped per account; the first signed-in account retains the legacy database, subsequent accounts and signed-out guests use separate databases
+- Sync exposes connecting, syncing, synced, offline, and error states, with a retry action; pending local records survive reloads
 - First sign-in on a device does a union pass: local-only and cloud-only docs are merged, nothing is dropped
 - Auth via `features/auth/useAuth.ts` (Google Sign-In); UI lives in Settings → Sync (`components/settings/SyncSection.tsx`)
 - Settings (`AppSettings`) intentionally do NOT sync — stay per-device in `localStorage` as designed above
@@ -226,7 +229,8 @@ npm run preview      # Preview production build locally
 
 ## Deployment
 
-- Target: Vercel or Netlify (static SPA)
+- Existing production deployment: https://readflow-red.vercel.app (Vercel)
+- Firebase project: `readflow-app-99db0`; deploy `firestore.rules` alongside the updated client
 - Build output: `dist/`
 - No server-side rendering required
 - HTTPS required for PWA / Service Worker
@@ -251,7 +255,5 @@ npm run preview      # Preview production build locally
 
 - File upload (PDF, DOCX)
 - AI summary / key points extraction
-- Cloud sync
-- Multi-user / authentication
 - Export functionality
 - Annotations / highlights

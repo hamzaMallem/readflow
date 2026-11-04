@@ -17,7 +17,10 @@ export default function LibraryPage() {
       {/* Header */}
       <header className="sticky top-0 z-10 bg-gray-50 dark:bg-gray-950 px-4 pt-safe-top pb-3 border-b border-gray-100 dark:border-gray-800">
         <div className="flex items-center justify-between mb-3">
-          <h1 className="text-xl font-bold text-gray-900 dark:text-white">ReadFlow</h1>
+          <h1 className="flex items-center gap-2.5 text-xl font-bold text-gray-900 dark:text-white">
+            <img src="/readflow-logo.svg" alt="" width="36" height="36" />
+            ReadFlow
+          </h1>
           <div className="flex items-center gap-1">
             <IconButton label="Settings" onClick={() => navigate('/settings')}>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

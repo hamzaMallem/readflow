@@ -1,8 +1,12 @@
-const CACHE_NAME = 'readflow-v2';
+const CACHE_NAME = 'readflow-v3';
 
 const PRECACHE_ASSETS = [
   '/',
   '/index.html',
+  '/readflow-logo.svg',
+  '/icons/readflow-192.png',
+  '/icons/readflow-512.png',
+  '/icons/readflow-maskable-512.png',
 ];
 
 self.addEventListener('install', (event) => {
